@@ -58,30 +58,38 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
 
 
 async function generatePdfFromHtml(htmlContent) {
-    console.log("Chrome Path:", puppeteer.executablePath());
-    const browser = await puppeteer.launch({
-        executablePath: puppeteer.executablePath(),
-  headless: true,
-  args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox"
-  ]
-})
-    const page = await browser.newPage();
-    await page.setContent(htmlContent, { waitUntil: "networkidle0" })
+    try {
+        console.log("Chrome Path:", puppeteer.executablePath());
 
-    const pdfBuffer = await page.pdf({
-        format: "A4", margin: {
-            top: "20mm",
-            bottom: "20mm",
-            left: "15mm",
-            right: "15mm"
-        }
-    })
+        const browser = await puppeteer.launch({
+            executablePath: puppeteer.executablePath(),
+            headless: true,
+            args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--single-process"
+            ]
+        });
 
-    await browser.close()
+        const page = await browser.newPage();
 
-    return pdfBuffer
+        await page.setContent(htmlContent, {
+            waitUntil: "networkidle0"
+        });
+
+        const pdfBuffer = await page.pdf({
+            format: "A4"
+        });
+
+        await browser.close();
+
+        return pdfBuffer;
+
+    } catch (error) {
+        console.error("PDF ERROR:", error);
+        throw error;
+    }
 }
 
 async function generateResumePdf({ resume, selfDescription, jobDescription }) {
