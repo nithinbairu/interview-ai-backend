@@ -62,7 +62,7 @@ async function generatePdfFromHtml(htmlContent) {
         console.log("Chrome Path:", puppeteer.executablePath());
 
         const browser = await puppeteer.launch({
-            executablePath: puppeteer.executablePath(),
+            // executablePath: puppeteer.executablePath(),
             headless: true,
             args: [
                 "--no-sandbox",
